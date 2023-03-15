@@ -1,7 +1,9 @@
-controllers:
-    resource: ../../src/Controller/
+controller_1:
+    resource: ../../vendor/ssh/myjwtbundle/Controller
     type: annotation
-
+controller_2:
+    resource: ../../src/Controller
+    type: annotation
 kernel:
     resource: ../../src/Kernel.php
     type: annotation

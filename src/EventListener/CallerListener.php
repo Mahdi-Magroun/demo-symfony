@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\Admin;
 use App\Manager\CompanyManager;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -77,12 +78,12 @@ class CallerListener
             if (is_object($wsUser)) {
                 if (in_array('ROLE_BACK', $wsUser->getRoles())) {
                     $user = $this->apiEntityManager
-                            ->getRepository(BackUser::class)
+                            ->getRepository(Admin::class)
                             ->findOneByMail($wsUser->getUsername());
 //                dd($user->getGroup());
                     if (!$user->getGroup()) {
                         $this->exceptionManager->throwAccessDeniedException();
-                    }
+                    }   
 
                     $request->attributes->set('userCaller', $user);
                 }
@@ -100,16 +101,7 @@ class CallerListener
                         }
 
                         $request->attributes->set('companyUserCaller', $companyuser);
-
-                        /* $informations = $this->companyManager
-                          ->init(['code' => $wsUser->getCode()])
-                          ->getInformations();
-
-                          if (!$informations instanceof User) {
-                          $this->exceptionManager->throwAccessDeniedException();
-                          }
-
-                          $request->attributes->set('companyUserCaller', $informations); */
+                          $request->attributes->set('companyUserCaller', $informations);
                     }
                 }
             }

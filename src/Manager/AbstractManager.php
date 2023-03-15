@@ -3,8 +3,8 @@
 namespace App\Manager;
 
 use App\Entity\Client;
-use SSH\MsJwtBundle\Utils\MyTools;
-use SSH\MsJwtBundle\Manager\ExceptionManager;
+use SSH\MyJwtBundle\Utils\MyTools;
+use SSH\MyJwtBundle\Manager\ExceptionManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -306,7 +306,7 @@ abstract class AbstractManager //implements ModelInterface
      */
     protected function updateObject($object, $data)
     {
-        if ($object instanceof \SSH\MsJwtBundle\Entity\AbstractEntity) {
+        if ($object instanceof \SSH\MyJwtBundle\Entity\AbstractEntity) {
 
             $object->fromArray($data);
 
@@ -332,7 +332,7 @@ abstract class AbstractManager //implements ModelInterface
 
     protected function updateObjectForward($object)
     {
-        if ($object instanceof \SSH\MsJwtBundle\Entity\AbstractEntity) {
+        if ($object instanceof \SSH\MyJwtBundle\Entity\AbstractEntity) {
 
 
 
@@ -363,7 +363,7 @@ abstract class AbstractManager //implements ModelInterface
      */
     protected function deleteObject($object)
     {
-        if ($object instanceof \SSH\MsJwtBundle\Entity\AbstractEntity) {
+        if ($object instanceof \SSH\MyJwtBundle\Entity\AbstractEntity) {
 
             $this->apiEntityManager->remove($object);
             $this->apiEntityManager->flush();

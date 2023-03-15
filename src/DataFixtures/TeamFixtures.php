@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Admin;
 use App\Entity\Team;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -25,9 +26,9 @@ class TeamFixtures extends Fixture
             }
             
             $teamMember->setLastName("mylatename$i");
-            $teamMember->setUsername("user$i");
+            $teamMember->setFirstName("user$i");
             $teamMember->setPassword("password".$i); 
-            $teamMember->setRole(['ROLE_TEAM']);
+            $teamMember->setRole(json_encode(['ROLE_TEAM']));
             $manager->persist($teamMember);
         }
        
