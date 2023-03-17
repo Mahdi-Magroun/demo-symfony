@@ -38,7 +38,7 @@ class GovernorateManager extends AbstractManager{
             ];
         }
         $governorates = null ; 
-        return new JsonResponse(["status"=>"Success","message"=>"","result"=>$data]);
+        return ["status"=>"Success","message"=>"","data"=>$data];
     }
 
 

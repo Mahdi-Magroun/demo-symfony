@@ -20,10 +20,10 @@ class Municipality
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100,unique:true)]
     private ?string $frenshName = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100,unique:true)]
     private ?string $arabicName = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]

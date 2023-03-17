@@ -18,8 +18,9 @@ class GovernorateController extends AbstractController
  /**
   * @Route("/team/governorate",name="_team_governorate",methods={"GET"})
   */
-    public function getManys(): Response
+    public function getManys()
     {
+
         return  $this->manager->init()
                 ->getMany();
     }

@@ -25,7 +25,7 @@ class MunicipalityAgent extends AbstractEntity
     #[ORM\Column(length: 50)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50,unique:true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -43,6 +43,9 @@ class MunicipalityAgent extends AbstractEntity
     #[ORM\ManyToOne(inversedBy: 'municipalityAgents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Municipality $municipality = null;
+
+    #[ORM\Column(nullable:false)]
+    private ?bool $isCurentlyActivated = null;
 
     public function __construct()
     {
@@ -158,6 +161,18 @@ class MunicipalityAgent extends AbstractEntity
     public function setMunicipality(?Municipality $municipality): self
     {
         $this->municipality = $municipality;
+
+        return $this;
+    }
+
+    public function isIsCurentlyActivated(): ?bool
+    {
+        return $this->isCurentlyActivated;
+    }
+
+    public function setIsCurentlyActivated(bool $isCurentlyActivated): self
+    {
+        $this->isCurentlyActivated = $isCurentlyActivated;
 
         return $this;
     }

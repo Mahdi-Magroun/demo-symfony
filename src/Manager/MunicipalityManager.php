@@ -10,12 +10,14 @@ use Doctrine\Persistence\ManagerRegistry;
 use SSH\MyJwtBundle\Manager\ExceptionManager;
 use Symfony\Component\Security\Core\Security;
 use App\ApiModel\Municipality\MunicipalityCreate;
+use App\ApiModel\Municipality\MunicipalityUpdate;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class MunicipalityManager extends AbstractManager{
     public Security $security;
     public MunicipalityCreate $municipalityCRModel;
+    public MunicipalityUpdate $municipalityUPModel;
 
     public function __construct(
         ManagerRegistry $entityManager,
@@ -29,9 +31,19 @@ class MunicipalityManager extends AbstractManager{
         parent::__construct($entityManager, $exceptionManager, $requestStack);
     }
 
-    public function init($settings=[]){
-        $this->municipalityCRModel = $this->request->get("Municipality");
+    public function init(string $method,$settings=[]){
         parent::setSettings($settings);
+        if ($method=="create") {
+            # code...
+            $this->municipalityCRModel = $this->request->get("Municipality");
+        }
+        elseif ($method=="update") {
+           $this->municipalityUPModel=$this->request->get("Municipality");
+        }
+        elseif ($method=="getMany") {
+            # code...
+        }
+        
         return $this; 
     }
 
@@ -68,6 +80,7 @@ class MunicipalityManager extends AbstractManager{
         ->setEmail($this->municipalityCRModel->email);
         $president = new MunicipalityAgent();
         $president->setFirstName($this->municipalityCRModel->president_first_name)
+        ->setIsCurentlyActivated(true)
         ->setLastName($this->municipalityCRModel->president_last_name)
         ->setEmail($this->municipalityCRModel->president_email)
         ->setCin($this->municipalityCRModel->president_cin)
@@ -76,7 +89,7 @@ class MunicipalityManager extends AbstractManager{
         // generate random password 
             
         $pwdLength=10;
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&$*%:\/-+';
+        $characters = '&$*%:\/-+0123456789abcdefg&$*%:\/-+hijklmnopqrstuvwx&$*%:\/-+yzABCDEFGHIJKLMNOPQRSTUVWXYZ&$*%:\/-+';
         $password = '';
         for ($i = 0; $i < $pwdLength; $i++) {
             $index = rand(0, strlen($characters) - 1);
@@ -103,14 +116,14 @@ class MunicipalityManager extends AbstractManager{
             $this->apiEntityManager->getConnection()->rollBack();
             throw new \Exception("error_persisting_data :".$th->getMessage(), 1);
         }
-        return new JsonResponse([
+        return[
             "status"=>"Success",
             "message"=>"President&&Municipality successfuly created ",
-            "result"=>[
+            "data"=>[
                 "municipality_code"=>$municipality->getCode(),
                 "president_code"=>$president->getCode()
             ]
-        ],201);
+        ];
     
             
         
@@ -124,8 +137,10 @@ class MunicipalityManager extends AbstractManager{
         }
         $municipalityPresident = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
         ->findOneBy(["municipality"=>$municipality]);
-        return new JsonResponse([
-            "result"=>[
+        return [
+            "status"=>"Success",
+            "message"=>"",
+            "data"=>[
                 "governorate"=>[
                     "gouvernorate_code"=>$municipality->getGovernorate()->getCode(),
                     "gouvernorate_frensh_name"=>$municipality->getGovernorate()->getFrenshName(),
@@ -142,7 +157,6 @@ class MunicipalityManager extends AbstractManager{
                     "last_name"=>$municipalityPresident->getLastName(),
                     "email"=>$municipalityPresident->getEmail()
                 ],
-               
                 "municipality_code"=>$municipality->getCode(),
                 "isActivated"=>$municipality->isIsActivated(),
                 "national_municipality_id"=>$municipality->getNationalId(),
@@ -153,8 +167,118 @@ class MunicipalityManager extends AbstractManager{
                 
             ]
            
-        ]);
+        ];
 
+    }
+
+    public function getMany(){
+         $gouvernorateCode = $this->request->query->get('governorate_code');
+         $governorate = $this->apiEntityManager->getRepository(Gouvernorate::class)
+         ->findOneBy(['code'=>$gouvernorateCode]);
+        
+         $filter = [
+            "governorate_id"=> ($governorate) ? $governorate->getId() : null,
+            "frensh_name"=>$this->request->query->get('frensh_name') ,
+            "arabic_name"=>$this->request->query->get('arabic_name'),
+            "is_activated"=>$this->request->query->get('is_activated')
+         ];    
+         
+        $municipalities = $this->apiEntityManager->getRepository(Municipality::class)
+         ->findMany($filter,[]);
+        return [
+            "status"=>"Success",
+            "message"=>"",
+            "data"=>$municipalities
+        ];
+         
+    }
+    public function activation($municipalityCode){
+        $parameter = (array)json_decode( $this->request->getContent());
+        if(!isset($parameter['is_activated']))
+            throw new \Exception("missing_parameter", 1);
+            
+        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
+                        ->findOneBy(['code'=>$municipalityCode]);
+        if(!$municipality)  
+            throw new \Exception("municipality_not_found", 1);
+        $municipality->setIsActivated($parameter['is_activated']);
+        $agents = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
+        ->findBy(["municipality"=>$municipality,"isCurentlyActivated"=>true]);
+        
+        //unblock and unblock agent  all agent
+        foreach ($agents as $agent) {
+            if ($parameter['is_activated']) {
+                $agent->setIsActivated(true);
+                }
+            else
+            $agent->setIsActivated(false);
+        }
+
+
+
+        $this->apiEntityManager->persist($municipality);
+        $this->apiEntityManager->flush();
+       $status =($municipality->isIsActivated())?"unblocked":"blocked";
+        return new JsonResponse([
+            "status"=>"updated",
+            "message"=>"municipality is ".$status   ,
+           
+        ]);
+            
+    }
+
+    public function update($code){
+        $governorate = $this->apiEntityManager->getRepository(Gouvernorate::class)
+        ->findOneBy(["code"=>$this->municipalityUPModel->gouvernorate]);
+        if(!$governorate){
+            throw new \Exception("gouvernorate_not_found_exception", 1);
+        }
+        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
+            ->findOneBy(["code"=>$code]);
+        if (!$municipality) {
+            throw new \Exception("invalid_municipality_code", 1);
+        }
+        $municipality->
+        setGovernorate($governorate)
+        ->setUpdator(
+            $this->apiEntityManager->getRepository(Team::class)->findOneBy(["code"=>$this->security->getUser()->getCode()])
+
+        )
+        ->setFrenshName($this->municipalityUPModel->frensh_name)
+        ->setArabicName($this->municipalityUPModel->arabic_name)
+        ->setPhoneNumber(strval( $this->municipalityUPModel->phone_number))
+        ->setWebSite($this->municipalityUPModel->web_site)
+        ->setNationalId($this->municipalityUPModel->national_id)
+        ->setPopulationCount($this->municipalityUPModel->population_count)
+        ->setYearPopulationCount($this->municipalityUPModel->population_year_count)
+        ->setCreatedAt(new DateTimeImmutable())
+        ->setIsActivated(true)
+        ->setZipCode($this->municipalityUPModel->zip_code)
+        ->setStreet($this->municipalityUPModel->street)
+        ->setBuildingNumber($this->municipalityUPModel->building_number)
+        ->setEmail($this->municipalityUPModel->email);
+        $this->apiEntityManager->persist($municipality);
+        $this->apiEntityManager->flush();
+        return [
+            "status"=>"Success",
+            "message"=>"Municipality_updated"
+        ];
+
+    }
+
+    public function delete($codeMunicipality){
+        $municipality= $this->apiEntityManager->getRepository(Municipality::class)
+                        ->findOneBy(['code'=>$codeMunicipality]);
+
+        if (!$municipality) {
+            throw new \Exception("invalid_municipality_code", 1);
+        }
+        $this->apiEntityManager->remove($municipality);
+        $this->apiEntityManager->flush();
+        return [
+            'message'=>"municipality_deleted_successfuly",
+            "status"=>"Success"
+        ];  
     }
 
 }
