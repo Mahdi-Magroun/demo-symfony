@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Gouvernorate;
+use App\Entity\Governorate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Gouvernorate>
+ * @extends ServiceEntityRepository<Governorate>
  *
- * @method Gouvernorate|null find($id, $lockMode = null, $lockVersion = null)
- * @method Gouvernorate|null findOneBy(array $criteria, array $orderBy = null)
- * @method Gouvernorate[]    findAll()
- * @method Gouvernorate[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Governorate|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Governorate|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Governorate[]    findAll()
+ * @method Governorate[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class GouvernorateRepository extends ServiceEntityRepository
+class GovernorateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Gouvernorate::class);
+        parent::__construct($registry, Governorate::class);
     }
 
-    public function save(Gouvernorate $entity, bool $flush = false): void
+    public function save(Governorate $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class GouvernorateRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Gouvernorate $entity, bool $flush = false): void
+    public function remove(Governorate $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 

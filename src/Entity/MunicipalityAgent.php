@@ -44,8 +44,19 @@ class MunicipalityAgent extends AbstractEntity
     #[ORM\JoinColumn(nullable: false)]
     private ?Municipality $municipality = null;
 
-    #[ORM\Column(nullable:false)]
-    private ?bool $isCurentlyActivated = null;
+   
+
+    #[ORM\Column()]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE,nullable:true)]
+    private ?\DateTimeImmutable $dateBegin = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $dateEnd = null;
 
     public function __construct()
     {
@@ -165,14 +176,52 @@ class MunicipalityAgent extends AbstractEntity
         return $this;
     }
 
-    public function isIsCurentlyActivated(): ?bool
+   
+
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->isCurentlyActivated;
+        return $this->createdAt;
     }
 
-    public function setIsCurentlyActivated(bool $isCurentlyActivated): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->isCurentlyActivated = $isCurentlyActivated;
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getDateBegin(): ?\DateTimeImmutable
+    {
+        return $this->dateBegin;
+    }
+
+    public function setDateBegin(\DateTimeImmutable $dateBegin): self
+    {
+        $this->dateBegin = $dateBegin;
+
+        return $this;
+    }
+
+    public function getDateEnd(): ?\DateTimeImmutable
+    {
+        return $this->dateEnd;
+    }
+
+    public function setDateEnd(?\DateTimeImmutable $dateEnd): self
+    {
+        $this->dateEnd = $dateEnd;
 
         return $this;
     }

@@ -35,7 +35,7 @@ class MunicipalityUpdate extends CommonParameterBag {
      /**
      * @Assert\NotBlank
      */
-    public  $gouvernorate;
+    public  $governorate;
 
     
 

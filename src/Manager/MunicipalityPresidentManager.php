@@ -37,18 +37,24 @@ class MunicipalityPresidentManager extends AbstractManager{
            
         }
         return [
-            "code"=>$president->getCode(),
-            "first_name"=>$president->getFirstName(),
-            "last_name"=>$president->getLastName(),
-            "email"=>$president->getEmail(),
-            "cin"=>$president->getCin(),
-            "created_at"=>null,
-            "updated_at"=>null,
-            "is_activated"=>$president->isIsActivated(),
-            "municipality"=>[
-                "code"=>$president->getMunicipality()->getCode(),
-                "frensh_name"=>$president->getMunicipality()->getFrenshName(),
-                "arabic_name"=>$president->getMunicipality()->getArabicName(),
+            "data"=>[
+            "president"=>[
+                "code"=>$president->getCode(),
+                "first_name"=>$president->getFirstName(),
+                "last_name"=>$president->getLastName(),
+                "email"=>$president->getEmail(),
+                "cin"=>$president->getCin(),
+                "created_at"=>null,
+                "updated_at"=>null,
+                "is_activated"=>$president->isIsActivated(),
+                "date_begin"=>$president->getDateBegin()->format('Y-m-d'),
+                "date_end"=>$president->getDateEnd()->format('Y-m-d'),
+                "municipality"=>[
+                    "code"=>$president->getMunicipality()->getCode(),
+                    "frensh_name"=>$president->getMunicipality()->getFrenshName(),
+                    "arabic_name"=>$president->getMunicipality()->getArabicName(),
+                ]
+            ]
             ]
         ];
     }
@@ -76,12 +82,14 @@ class MunicipalityPresidentManager extends AbstractManager{
             "cin"=>$this->request->query->get('cin'),
             "role"=>$this->request->query->get('role'),
          ];    
-         $data =  $this->apiEntityManager->getRepository(MunicipalityAgent::class)
+         $presidents =  $this->apiEntityManager->getRepository(MunicipalityAgent::class)
          ->findManyAgents($filter);
          return [
-            "message"=>"",
-            "status"=>"Success",
-            "data"=>$data
+            "data"=>[
+                "presidents"=>$presidents
+            ]
+            
+           
          ];
 
    }
@@ -95,29 +103,26 @@ class MunicipalityPresidentManager extends AbstractManager{
     }
 
     public function activation($agentCode){
-        $parameter = (array)json_decode( $this->request->getContent());
-        if(!isset($parameter['is_activated']))
-            throw new \Exception("missing_parameter", 1);
-            
-        $agent = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
+       
+         $agent = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
                         ->findOneBy(['code'=>$agentCode]);
         if(!$agent)  
             throw new \Exception("municipality_president_not_found", 1);
-         if ($parameter['is_activated']) {
-             $agent->setIsActivated(true);
-             $agent->setIsCurentlyActivated(true);
+         if ($agent->isIsActivated()) {
+             $agent->setIsActivated(false);
+            
              }
          else{
-            $agent->setIsActivated(false);
-             $agent->setIsCurentlyActivated(false);
+            $agent->setIsActivated(true);
+        
          }
          $this->apiEntityManager->persist($agent);
          $this->apiEntityManager->flush();
         $status =($agent->isIsActivated())?"unblocked":"blocked";
          return [
-             "status"=>"updated",
-             "message"=>"municipality president  is ".$status   ,
-            
+            "data"=>[
+                "messages"=>"municipality president  is ".$status
+            ]
          ];
     }
 }

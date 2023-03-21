@@ -1,10 +1,11 @@
 <?php 
 namespace App\ApiModel\Municipality;
+use ZipStream\Bigint;
+use DateTimeImmutable;
 use App\ApiModel\Common\Address;
 use SSH\MyJwtBundle\Request\CommonParameterBag;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\ApiModel\Municipality\President\PresidentCreate;
-use ZipStream\Bigint;
 
 class MunicipalityCreate extends CommonParameterBag{
     /**
@@ -39,7 +40,7 @@ class MunicipalityCreate extends CommonParameterBag{
      /**
      * @Assert\NotBlank
      */
-    public  $gouvernorate;
+    public  $governorate;
 
     
 
@@ -63,6 +64,17 @@ class MunicipalityCreate extends CommonParameterBag{
      */
     public  $president_cin;
 
+    /**
+     *  @Assert\NotBlank
+     * 
+     */
+    public  $president_date_begin; 
+
+     /**
+     *  @Assert\NotBlank
+     * 
+     */
+    public  $president_date_end;
 
 
     // aux 

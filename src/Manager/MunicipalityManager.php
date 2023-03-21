@@ -3,7 +3,7 @@ namespace App\Manager;
 
 use App\Entity\Team;
 use DateTimeImmutable;
-use App\Entity\Gouvernorate;
+use App\Entity\Governorate;
 use App\Entity\Municipality;
 use App\Entity\MunicipalityAgent;
 use Doctrine\Persistence\ManagerRegistry;
@@ -54,10 +54,10 @@ class MunicipalityManager extends AbstractManager{
      */
     public function create(){
         // verify governorate 
-        $governorate = $this->apiEntityManager->getRepository(Gouvernorate::class)
-        ->findOneBy(["code"=>$this->municipalityCRModel->gouvernorate]);
+        $governorate = $this->apiEntityManager->getRepository(Governorate::class)
+        ->findOneBy(["code"=>$this->municipalityCRModel->governorate]);
         if(!$governorate){
-            throw new \Exception("gouvernorate_not_found_exception", 1);
+            throw new \Exception("governorate_not_found_exception", 1);
         }
         $municipality = new Municipality();
         $municipality->setGovernorate($governorate)
@@ -80,7 +80,9 @@ class MunicipalityManager extends AbstractManager{
         ->setEmail($this->municipalityCRModel->email);
         $president = new MunicipalityAgent();
         $president->setFirstName($this->municipalityCRModel->president_first_name)
-        ->setIsCurentlyActivated(true)
+        ->setDateBegin(new DateTimeImmutable( $this->municipalityCRModel->president_date_begin))
+        ->setCreatedAt(new DateTimeImmutable("now"))
+        ->setDateEnd(new DateTimeImmutable( $this->municipalityCRModel->president_date_end))
         ->setLastName($this->municipalityCRModel->president_last_name)
         ->setEmail($this->municipalityCRModel->president_email)
         ->setCin($this->municipalityCRModel->president_cin)
@@ -117,9 +119,10 @@ class MunicipalityManager extends AbstractManager{
             throw new \Exception("error_persisting_data :".$th->getMessage(), 1);
         }
         return[
-            "status"=>"Success",
-            "message"=>"President&&Municipality successfuly created ",
+           
+           
             "data"=>[
+                "messages"=>"President&&Municipality successfuly created ",
                 "municipality_code"=>$municipality->getCode(),
                 "president_code"=>$president->getCode()
             ]
@@ -138,13 +141,12 @@ class MunicipalityManager extends AbstractManager{
         $municipalityPresident = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
         ->findOneBy(["municipality"=>$municipality]);
         return [
-            "status"=>"Success",
-            "message"=>"",
+          
             "data"=>[
                 "governorate"=>[
-                    "gouvernorate_code"=>$municipality->getGovernorate()->getCode(),
-                    "gouvernorate_frensh_name"=>$municipality->getGovernorate()->getFrenshName(),
-                    "gouvernorate_frensh_name"=>$municipality->getGovernorate()->getArabicName(),
+                    "governorate_code"=>$municipality->getGovernorate()->getCode(),
+                    "governorate_frensh_name"=>$municipality->getGovernorate()->getFrenshName(),
+                    "governorate_frensh_name"=>$municipality->getGovernorate()->getArabicName(),
                     "nationl_id"=>$municipality->getGovernorate()->getNationalId()
                 ],
                 "address"=>[
@@ -172,9 +174,9 @@ class MunicipalityManager extends AbstractManager{
     }
 
     public function getMany(){
-         $gouvernorateCode = $this->request->query->get('governorate_code');
-         $governorate = $this->apiEntityManager->getRepository(Gouvernorate::class)
-         ->findOneBy(['code'=>$gouvernorateCode]);
+         $governorateCode = $this->request->query->get('governorate_code');
+         $governorate = $this->apiEntityManager->getRepository(Governorate::class)
+         ->findOneBy(['code'=>$governorateCode]);
         
          $filter = [
             "governorate_id"=> ($governorate) ? $governorate->getId() : null,
@@ -186,52 +188,44 @@ class MunicipalityManager extends AbstractManager{
         $municipalities = $this->apiEntityManager->getRepository(Municipality::class)
          ->findMany($filter,[]);
         return [
-            "status"=>"Success",
-            "message"=>"",
-            "data"=>$municipalities
+            "data"=>[
+            "municipalities"=>$municipalities
+            ]
         ];
          
     }
     public function activation($municipalityCode){
-        $parameter = (array)json_decode( $this->request->getContent());
-        if(!isset($parameter['is_activated']))
-            throw new \Exception("missing_parameter", 1);
+      
             
         $municipality = $this->apiEntityManager->getRepository(Municipality::class)
                         ->findOneBy(['code'=>$municipalityCode]);
         if(!$municipality)  
             throw new \Exception("municipality_not_found", 1);
-        $municipality->setIsActivated($parameter['is_activated']);
-        $agents = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
-        ->findBy(["municipality"=>$municipality,"isCurentlyActivated"=>true]);
+        if ($municipality->isIsActivated()) {
+             $municipality->setIsActivated(false);
+
+             }
+        else{
+            $municipality->setIsActivated(true);
         
-        //unblock and unblock agent  all agent
-        foreach ($agents as $agent) {
-            if ($parameter['is_activated']) {
-                $agent->setIsActivated(true);
-                }
-            else
-            $agent->setIsActivated(false);
-        }
-
-
-
+         }
         $this->apiEntityManager->persist($municipality);
         $this->apiEntityManager->flush();
        $status =($municipality->isIsActivated())?"unblocked":"blocked";
-        return new JsonResponse([
-            "status"=>"updated",
-            "message"=>"municipality is ".$status   ,
+        return [
+            "data"=>[
+            "messages"=>"municipality is ".$status   ,
+            ]
            
-        ]);
+        ];
             
     }
 
     public function update($code){
-        $governorate = $this->apiEntityManager->getRepository(Gouvernorate::class)
-        ->findOneBy(["code"=>$this->municipalityUPModel->gouvernorate]);
+        $governorate = $this->apiEntityManager->getRepository(Governorate::class)
+        ->findOneBy(["code"=>$this->municipalityUPModel->governorate]);
         if(!$governorate){
-            throw new \Exception("gouvernorate_not_found_exception", 1);
+            throw new \Exception("governorate_not_found_exception", 1);
         }
         $municipality = $this->apiEntityManager->getRepository(Municipality::class)
             ->findOneBy(["code"=>$code]);
@@ -260,8 +254,10 @@ class MunicipalityManager extends AbstractManager{
         $this->apiEntityManager->persist($municipality);
         $this->apiEntityManager->flush();
         return [
-            "status"=>"Success",
-            "message"=>"Municipality_updated"
+            "data"=>[
+                "messages"=>"Municipality_updated"
+            ]
+            
         ];
 
     }
@@ -276,8 +272,9 @@ class MunicipalityManager extends AbstractManager{
         $this->apiEntityManager->remove($municipality);
         $this->apiEntityManager->flush();
         return [
-            'message'=>"municipality_deleted_successfuly",
-            "status"=>"Success"
+            "data"=>[
+                'messages'=>"municipality_deleted_successfuly",
+            ]   
         ];  
     }
 

@@ -56,6 +56,9 @@ class Debt
     #[ORM\OneToMany(mappedBy: 'debt', targetEntity: Notice::class)]
     private Collection $notices;
 
+    #[ORM\Column(length: 255)]
+    private ?string $reference = null;
+
     public function __construct()
     {
         $this->notices = new ArrayCollection();
@@ -224,6 +227,18 @@ class Debt
                 $notice->setDebt(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(string $reference): self
+    {
+        $this->reference = $reference;
 
         return $this;
     }

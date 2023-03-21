@@ -4,12 +4,12 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;
-use App\Repository\GouvernorateRepository;
+use App\Repository\GovernorateRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: GouvernorateRepository::class)]
-class Gouvernorate
+#[ORM\Entity(repositoryClass: GovernorateRepository::class)]
+class Governorate
 {
     #[ORM\Id]
     #[ORM\GeneratedValue (strategy:'IDENTITY')]

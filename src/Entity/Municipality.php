@@ -52,14 +52,12 @@ class Municipality
 
     #[ORM\ManyToOne(inversedBy: 'municipalities')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Gouvernorate $governorate = null;
+    private ?Governorate $governorate = null;
 
     #[ORM\OneToMany(mappedBy: 'municipality', targetEntity: MunicipalityAgent::class)]
     private Collection $municipalityAgents;
 
-    #[ORM\ManyToMany(targetEntity: Citizent::class, mappedBy: 'municipalitys')]
-    private Collection $citizents;
-
+    
     #[ORM\OneToMany(mappedBy: 'municipality', targetEntity: Property::class)]
     private Collection $properties;
 
@@ -85,7 +83,7 @@ class Municipality
     public function __construct()
     {
         $this->municipalityAgents = new ArrayCollection();
-        $this->citizents = new ArrayCollection();
+     
         $this->properties = new ArrayCollection();
         $this->code = MyTools::GUIDv4();
        
@@ -228,12 +226,12 @@ class Municipality
         return $this;
     }
 
-    public function getGovernorate(): ?Gouvernorate
+    public function getGovernorate(): ?Governorate
     {
         return $this->governorate;
     }
 
-    public function setGovernorate(?Gouvernorate $governorate): self
+    public function setGovernorate(?Governorate $governorate): self
     {
         $this->governorate = $governorate;
 
@@ -265,33 +263,6 @@ class Municipality
             if ($municipalityAgent->getMunicipality() === $this) {
                 $municipalityAgent->setMunicipality(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Citizent>
-     */
-    public function getCitizents(): Collection
-    {
-        return $this->citizents;
-    }
-
-    public function addCitizent(Citizent $citizent): self
-    {
-        if (!$this->citizents->contains($citizent)) {
-            $this->citizents->add($citizent);
-            $citizent->addMunicipality($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCitizent(Citizent $citizent): self
-    {
-        if ($this->citizents->removeElement($citizent)) {
-            $citizent->removeMunicipality($this);
         }
 
         return $this;

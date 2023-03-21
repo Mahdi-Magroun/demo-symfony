@@ -50,9 +50,6 @@ class Citizent
     #[ORM\Column(length: 50)]
     private ?string $idType = null;
 
-    #[ORM\ManyToMany(targetEntity: Municipality::class, inversedBy: 'citizents')]
-    private Collection $municipalitys;
-
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Property::class)]
     private Collection $properties;
 
@@ -70,7 +67,7 @@ class Citizent
 
     public function __construct()
     {
-        $this->municipalitys = new ArrayCollection();
+       
         $this->properties = new ArrayCollection();
         $this->code = MyTools::GUIDv4();
         $this->debts = new ArrayCollection();
@@ -223,30 +220,7 @@ class Citizent
         return $this;
     }
 
-    /**
-     * @return Collection<int, Municipality>
-     */
-    public function getMunicipalitys(): Collection
-    {
-        return $this->municipalitys;
-    }
-
-    public function addMunicipality(Municipality $municipality): self
-    {
-        if (!$this->municipalitys->contains($municipality)) {
-            $this->municipalitys->add($municipality);
-        }
-
-        return $this;
-    }
-
-    public function removeMunicipality(Municipality $municipality): self
-    {
-        $this->municipalitys->removeElement($municipality);
-
-        return $this;
-    }
-
+   
     /**
      * @return Collection<int, Property>
      */

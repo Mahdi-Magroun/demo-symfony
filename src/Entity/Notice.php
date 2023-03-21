@@ -48,6 +48,9 @@ class Notice
         'post'
     ];
 
+    #[ORM\Column(length: 255)]
+    private ?string $reference = null;
+
     public function __construct()
     {
         $this->code = MyTools::GUIDv4();
@@ -170,5 +173,17 @@ class Notice
         throw new \Exception("Unknown_transfert_type", 1);
         
        
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(string $reference): self
+    {
+        $this->reference = $reference;
+
+        return $this;
     }
 }

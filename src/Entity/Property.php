@@ -43,6 +43,14 @@ class Property
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $reference = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
+    private array $allowedTypes = [
+        'building',
+        'land'
+    ];
+
     public function __construct()
     {
         $this->code = MyTools::GUIDv4();
@@ -163,5 +171,23 @@ class Property
         $this->reference = $reference;
 
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        if (in_array($type,$this->allowedTypes)) {
+            # code...
+            $this->type = $type;
+
+            return $this;
+        }
+        throw new \Exception("property type not allowed ", 1);
+        
+       
     }
 }

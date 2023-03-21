@@ -1,7 +1,7 @@
 <?php 
 namespace App\Manager;
 
-use App\Entity\Gouvernorate;
+use App\Entity\Governorate;
 use Doctrine\Persistence\ManagerRegistry;
 use SSH\MyJwtBundle\Manager\ExceptionManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,7 +28,7 @@ class GovernorateManager extends AbstractManager{
 
 
     public function getMany(){
-        $governorates = $this->apiEntityManager->getRepository(Gouvernorate::class)->findAll();
+        $governorates = $this->apiEntityManager->getRepository(Governorate::class)->findAll();
         $data=[];
         for ($i=0; $i <count($governorates) ; $i++) { 
             $data[]= [
@@ -38,7 +38,10 @@ class GovernorateManager extends AbstractManager{
             ];
         }
         $governorates = null ; 
-        return ["status"=>"Success","message"=>"","data"=>$data];
+        return ["data"=>[
+            "governorates"=>$data
+        ]
+        ];
     }
 
 
