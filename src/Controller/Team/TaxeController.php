@@ -22,5 +22,14 @@ class TaxeController extends AbstractController{
         ->create();
     }
 
+    /**
+     * @Route("/team/taxe/{code}",name="_update_taxe",methods={"PUT"})
+     * @Mapping(object="App\ApiModel\Taxe\TaxeUpdate", as="Taxe")
+     */
+    public function update($code){
+        return $this->manager->init('update')
+        ->update($code);
+    }
+
     
 }
