@@ -88,15 +88,12 @@ class MunicipalityManager extends AbstractManager{
         ->setCin($this->municipalityCRModel->president_cin)
         ->setIsActivated(true)
         ->setRole("ROLE_MUNICIPALITY_PRESIDENT"); 
-        // generate random password 
-            
-        $pwdLength=10;
-        $characters = '&$*%:\/-+0123456789abcdefg&$*%:\/-+hijklmnopqrstuvwx&$*%:\/-+yzABCDEFGHIJKLMNOPQRSTUVWXYZ&$*%:\/-+';
-        $password = '';
-        for ($i = 0; $i < $pwdLength; $i++) {
-            $index = rand(0, strlen($characters) - 1);
-            $password .= $characters[$index];
-        }
+        // generate random password     
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+';
+        // Shuffle the characters to make it more random
+        $characters = str_shuffle($characters);
+         // Get the first $length characters of the shuffled string
+         $password = substr($characters, 0, 12);
 
         // end pwd generation 
         $president->setPassword($password);

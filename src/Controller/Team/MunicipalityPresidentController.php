@@ -1,8 +1,9 @@
 <?php
 namespace App\Controller\Team;
-
+use SSH\MyJwtBundle\Annotations\Mapping;
 use App\Manager\MunicipalityPresidentManager;
 use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MunicipalityPresidentController extends AbstractController{
@@ -36,6 +37,24 @@ class MunicipalityPresidentController extends AbstractController{
         return $this->manager->init('getOneDetail')
             ->getOneDetail($code);
     }
+
+    /**
+     * @Route("team/municipality/president",name="_municipality_president_creation",methods={"POST"})
+     * @Mapping(object="App\ApiModel\Municipality\President\PresidentCreate", as="MunicipalityPresident")
+     */
+    public function create(){
+        return $this->manager->init('create')
+            ->create();
+    }
+     /**
+     * @Route("team/municipality/president/{code}",name="_municipality_president_updating",methods={"PUT"})
+     * @Mapping(object="App\ApiModel\Municipality\President\PresidentUpdate", as="MunicipalityPresident")
+     */
+    public function update(string $code){
+        return $this->manager->init('update')
+            ->update($code);
+    }
+
      
     
 }
