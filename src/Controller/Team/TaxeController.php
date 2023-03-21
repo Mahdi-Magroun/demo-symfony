@@ -39,5 +39,13 @@ class TaxeController extends AbstractController{
         ->getOneDetail($code);
     }
 
+      /**
+     * @Route("/team/taxes",name="_get_many_taxes",methods={"GET"})
+     * 
+     */
+    public function getMany(){
+        return $this->manager->init('getOneDetail')
+        ->getMany();
+    }
     
 }

@@ -16,6 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TaxeRepository extends ServiceEntityRepository
 {
+    private $table = "taxe";
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Taxe::class);
@@ -39,6 +40,43 @@ class TaxeRepository extends ServiceEntityRepository
         }
     }
 
+    public function findMany(array $filter, array $order){
+
+        $sql = "SELECT abbreviation,code,name from $this->table m  ";
+       $where=[];
+       $parameter=[];
+       
+      if (isset($filter['abbreviation'])) {
+        $where[]=" m.abbreviation ILIKe :abbreviation";
+        $parameter[":abbreviation"] = $filter['governabbreviationorate_id'].'%';
+        
+      }
+      if (isset($filter['name'])) {
+        $where[]=" m.name ILIKE :name";
+        $parameter[":name"] = $filter['name'].'%';
+        # code...
+      }
+      if (isset($filter['is_activated'])) {
+        $where[]=" m.is_activated =:is_activated";
+        $parameter[":is_activated"] = $filter['is_activated'];
+        # code...
+      }
+      if (isset($filter['arabic_name'])) {
+        $where[]=" m.arabic_name ILIKE :arabic_name";
+        $parameter[":arabic_name"] = $filter['arabic_name'].'%';
+        # code...
+      }
+      if (!empty($where)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+     
+     //  dd($sql);
+     $conn = $this->getEntityManager()->getConnection();
+     $stm = $conn->prepare($sql);
+     $result=  $stm->execute($parameter);
+    return $result->fetchAllAssociative();
+        
+    }
 //    /**
 //     * @return Taxe[] Returns an array of Taxe objects
 //     */

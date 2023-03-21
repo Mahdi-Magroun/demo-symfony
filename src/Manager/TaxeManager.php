@@ -99,7 +99,19 @@ class TaxeManager extends AbstractManager{
     }
 
     public function getMany(){
-        
+        $filter = [
+            "abbreviation"=>$this->request->query->get('abbreviation') ,
+            "name"=>$this->request->query->get('name'),
+            "is_activated"=>$this->request->query->get('is_activated'),
+         ]; 
+         
+          $taxes  = $this->apiEntityManager->getRepository(Taxe::class)
+         ->findMany($filter,[]);
+        return [
+            'data'=>[
+                "taxes"=>$taxes
+            ]
+            ];
     }
     public function getOneDetail($code){
         $taxe = $this->apiEntityManager->getRepository(Taxe::class)
