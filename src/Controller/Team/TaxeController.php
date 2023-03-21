@@ -30,6 +30,14 @@ class TaxeController extends AbstractController{
         return $this->manager->init('update')
         ->update($code);
     }
+     /**
+     * @Route("/team/taxe/{code}",name="_get_one_detail_taxe",methods={"GET"})
+     * 
+     */
+    public function getOneDetail($code){
+        return $this->manager->init('getOneDetail')
+        ->getOneDetail($code);
+    }
 
     
 }

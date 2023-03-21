@@ -96,8 +96,41 @@ class TaxeManager extends AbstractManager{
            ]
             
            ];
+    }
+
+    public function getMany(){
+        
+    }
+    public function getOneDetail($code){
+        $taxe = $this->apiEntityManager->getRepository(Taxe::class)
+        ->findOneBy(['code'=>$code]);
+        if(!$taxe)
+             throw new \Exception("invalid_taxe_code", 1);
+        $creator = $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code'=>$taxe->getCreator()->getCode()]);
+        $updator =  $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code'=>$taxe->getUpdator()->getCode()]);
+        return [
+            "data"=>[
+                "taxe_abbreviation"=>$taxe->getAbbreviation(),
+                "taxe_name"=>$taxe->getName(),
+                "creator"=>  [
+                    "code"=>$creator->getCode(),
+                    "first_name"=>$creator->getFirstName(),
+                    "last_name"=>$creator->getLastName(),
+                ],
+                "updator"=>($updator)?[
+                    "code"=>$creator->getCode(),
+                    "first_name"=>$creator->getFirstName(),
+                    "last_name"=>$creator->getLastName(),
+                ]:null,
+                "created_at"=>($taxe->getCreatedAt())?$taxe->getCreatedAt()->format('Y-m-d'):null,
+                "updated_at"=>($taxe->getUpdatedAt())?$taxe->getUpdatedAt()->format('Y-m-d'):null,
+                "date_begin"=>($taxe->getDateBegin())?$taxe->getDateBegin()->format('Y-m-d'):null,
+                "date_end"=>($taxe->getDateEnd())?$taxe->getDateEnd()->format('Y-m-d'):null,
+                "is_activated"=>$taxe->isIsActivated()
 
 
-            
+            ]
+            ];
+
     }
 }
