@@ -180,6 +180,7 @@ class MunicipalityPresidentManager extends AbstractManager{
         ->setCin($this->presidentUPModel->cin)
         ->setIsActivated($this->presidentUPModel->is_activated)
         ->setUpdatedAt(new DateTimeImmutable());
+        
         $this->apiEntityManager->persist($president);
         $this->apiEntityManager->flush();
         return [
@@ -213,4 +214,6 @@ class MunicipalityPresidentManager extends AbstractManager{
             ]
          ];
     }
+    #generate random password
+    
 }

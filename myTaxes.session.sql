@@ -1,0 +1,67 @@
+INSERT INTO citizent (
+    id,
+    code,
+    first_name,
+    last_name,
+    father_name,
+    garnd_father_name,
+    identity_card,
+    passport,
+    residence_card,
+    phone_number,
+    email,
+    id_type,INSERT INTO citizent (
+        id,
+        code,
+        first_name,
+        last_name,
+        father_name,
+        garnd_father_name,
+        identity_card,
+        passport,
+        residence_card,
+        phone_number,
+        email,
+        id_type,
+        zip_code,
+        street,
+        building_number
+      )
+    VALUES (
+        id:integer,
+        'code:character varying',
+        'first_name:character varying',
+        'last_name:character varying',
+        'father_name:character varying',
+        'garnd_father_name:character varying',
+        'identity_card:bigint',
+        'passport:character varying',
+        'residence_card:character varying',
+        'phone_number:bigint',
+        'email:character varying',
+        'id_type:character varying',
+        zip_code:integer,
+        'street:character varying',
+        building_number:integer
+      );
+    zip_code,
+    street,
+    building_number
+  )
+VALUES (
+    id:integer,
+    'code:character varying',
+    'first_name:character varying',
+    'last_name:character varying',
+    'father_name:character varying',
+    'garnd_father_name:character varying',
+    'identity_card:bigint',
+    'passport:character varying',
+    'residence_card:character varying',
+    'phone_number:bigint',
+    'email:character varying',
+    'id_type:character varying',
+    zip_code:integer,
+    'street:character varying',
+    building_number:integer
+  );

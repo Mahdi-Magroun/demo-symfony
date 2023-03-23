@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "54.38.25.247",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "username": "mytaxes_user",
+            "database": "mytaxes_dev",
+            "name": "myTaxes"
+        }
+    ],
+    "php.version": "8.2.3"
+}
