@@ -139,7 +139,7 @@ class TaxeManager extends AbstractManager
                 "updated_at" => ($taxe->getUpdatedAt()) ? $taxe->getUpdatedAt()->format('Y-m-d') : null,
                 "date_begin" => ($taxe->getDateBegin()) ? $taxe->getDateBegin()->format('Y-m-d') : null,
                 "date_end" => ($taxe->getDateEnd()) ? $taxe->getDateEnd()->format('Y-m-d') : null,
-                "is_activated" => $taxe->isIsActivated()
+                "is_activated" => $taxe->getIsActivated()
 
 
             ]

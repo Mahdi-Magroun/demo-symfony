@@ -81,7 +81,7 @@ class TaxeSearchCriteriaManager extends AbstractManager
             "code" => $taxeSearchCriteria->getCode(),
             "value" => $taxeSearchCriteria->getValue(),
             "type" => $taxeSearchCriteria->getType(),
-            "is_activated" => $taxeSearchCriteria->isIsActivated(),
+            "is_activated" => $taxeSearchCriteria->getIsActivated(),
             "created_at" => $taxeSearchCriteria->getCreatedAt()->format('Y-m-d'),
             "updated_at" => ($taxeSearchCriteria->getUpdatedAt())?$taxeSearchCriteria->getUpdatedAt()->format('Y-m-d'):null,
             "date_begin" => $taxeSearchCriteria->getDateBegin()->format('Y-m-d'),

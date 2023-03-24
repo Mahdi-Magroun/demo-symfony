@@ -110,7 +110,7 @@ class Taxe
         return $this;
     }
 
-    public function isIsActivated(): ?bool
+    public function getIsActivated(): ?bool
     {
         return $this->isActivated;
     }
