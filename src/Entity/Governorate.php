@@ -2,14 +2,19 @@
 
 namespace App\Entity;
 
+
+use App\Entity\AbstractEntity;
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;
+
 use App\Repository\GovernorateRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: GovernorateRepository::class)]
-class Governorate
+class Governorate extends AbstractEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue (strategy:'IDENTITY')]
@@ -17,15 +22,19 @@ class Governorate
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_municipality'])]
     private ?string $code = null;
 
     #[ORM\Column]
+    #[Groups(['show_municipality'])]
     private ?int $nationalId = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['show_municipality'])]
     private ?string $frenshName = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['show_municipality'])]
     private ?string $arabicName = null;
 
     #[ORM\OneToMany(mappedBy: 'governorate', targetEntity: Municipality::class)]
@@ -80,6 +89,7 @@ class Governorate
 
     public function getArabicName(): ?string
     {
+     
         return $this->arabicName;
     }
 

@@ -2,86 +2,114 @@
 
 namespace App\Entity;
 
+use App\Entity\AbstractEntity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;
 use App\Repository\MunicipalityRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MunicipalityRepository::class)]
-class Municipality
+class Municipality extends AbstractEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue (strategy:'IDENTITY')]  
     #[ORM\Column]
+  
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_municipality','president_details'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 100,unique:true)]
+    #[Groups(['show_municipality','president_details'])]
     private ?string $frenshName = null;
 
+
     #[ORM\Column(length: 100,unique:true)]
+    #[Groups(['show_municipality','president_details'])]
     private ?string $arabicName = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    #[Groups(['show_municipality'])]
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['show_municipality'])]
     private ?string $webSite = null;
 
     #[ORM\Column]
+    #[Groups(['show_municipality'])]
     private ?int $nationalId = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    #[Groups(['show_municipality'])]
     private ?string $populationCount = null;
 
     #[ORM\Column(length: 255,nullable:true)]
+    #[Groups(['show_municipality'])]
     private ?int $yearPopulationCount = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[Groups(['show_municipality'])]
+    private ?\DateTime $createdAt = null;
 
     #[ORM\Column(nullable:true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[Groups(['show_municipality'])]
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column]
+    #[Groups(['show_municipality'])]
     private ?bool $isActivated = null;
 
     #[ORM\ManyToOne(inversedBy: 'municipalities')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['show_municipality'])]
+   
     private ?Governorate $governorate = null;
 
+
     #[ORM\OneToMany(mappedBy: 'municipality', targetEntity: MunicipalityAgent::class)]
+
     private Collection $municipalityAgents;
 
     
     #[ORM\OneToMany(mappedBy: 'municipality', targetEntity: Property::class)]
+   
     private Collection $properties;
 
     #[ORM\Column]
+    #[Groups(['show_municipality'])]
     private ?int $zipCode = null;
 
+
     #[ORM\Column(length: 255)]
+    #[Groups(['show_municipality'])]
     private ?string $street = null;
 
     #[ORM\Column]
+    #[Groups(['show_municipality'])]
     private ?int $buildingNumber = null;
 
     #[ORM\Column(length: 255,nullable:true)]
+    #[Groups(['show_municipality'])]
     private ?string $email = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(fetch: 'EAGER')]
+    #[Groups(['show_municipality','show_no_credantials'])]
     private ?Team $creator = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['show_municipality','show_no_credantials'])]
     private ?Team $updator = null;
 
-    public function __construct()
+    public function __construct( $data=[])
     {
+        parent::__construct($data);
         $this->municipalityAgents = new ArrayCollection();
      
         $this->properties = new ArrayCollection();
@@ -190,24 +218,24 @@ class Municipality
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 

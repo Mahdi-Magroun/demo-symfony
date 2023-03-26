@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\AbstractEntity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;
-use SSH\MyJwtBundle\Entity\AbstractEntity;
 use App\Repository\MunicipalityAgentRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MunicipalityAgentRepository::class)]
 class MunicipalityAgent extends AbstractEntity
@@ -17,49 +18,61 @@ class MunicipalityAgent extends AbstractEntity
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_no_credentials','president_details'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['show_no_credentials','president_details'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['show_no_credentials','president_details'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 50,unique:true)]
+    #[Groups(['show_no_credentials','president_details'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::BIGINT)]
+    #[Groups(['president_details'])]
     private ?string $cin = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $role = null;
 
-    #[ORM\Column]
+    #[ORM\Column] 
+    #[Groups(['president_details'])]
     private ?bool $isActivated = null;
 
     #[ORM\ManyToOne(inversedBy: 'municipalityAgents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['president_details'])]
     private ?Municipality $municipality = null;
 
    
 
     #[ORM\Column()]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[Groups(['show_no_credentials','president_details'])]
+    private ?\DateTime $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[Groups(['show_no_credentials','president_details'])]
+    private ?\DateTime $updatedAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE,nullable:true)]
-    private ?\DateTimeImmutable $dateBegin = null;
+    #[ORM\Column(nullable:true)]
+    #[Groups(['show_no_credentials','president_details'])]
+    private ?\DateTime $dateBegin = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $dateEnd = null;
+    #[ORM\Column( nullable: true)]
+    #[Groups(['show_no_credentials','president_details'])]
+    private ?\DateTime $dateEnd = null;
 
-    public function __construct()
+    public function __construct($data=[])
     {
+        parent::__construct($data);
         $this->code = MyTools::GUIDv4();
     }
     public function getId(): ?int
@@ -178,48 +191,48 @@ class MunicipalityAgent extends AbstractEntity
 
    
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getDateBegin(): ?\DateTimeImmutable
+    public function getDateBegin(): ?\DateTime
     {
         return $this->dateBegin;
     }
 
-    public function setDateBegin(\DateTimeImmutable $dateBegin): self
+    public function setDateBegin(\DateTime $dateBegin): self
     {
         $this->dateBegin = $dateBegin;
 
         return $this;
     }
 
-    public function getDateEnd(): ?\DateTimeImmutable
+    public function getDateEnd(): ?\DateTime
     {
         return $this->dateEnd;
     }
 
-    public function setDateEnd(?\DateTimeImmutable $dateEnd): self
+    public function setDateEnd(?\DateTime $dateEnd): self
     {
         $this->dateEnd = $dateEnd;
 

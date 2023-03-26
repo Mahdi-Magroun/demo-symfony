@@ -2,15 +2,16 @@
 
 namespace App\Manager;
 
-use App\ApiModel\Municipality\President\PresidentCreate;
-use App\ApiModel\Municipality\President\PresidentUpdate;
+use DateTime;
 use App\Entity\Municipality;
 use App\Entity\MunicipalityAgent;
-use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use SSH\MyJwtBundle\Manager\ExceptionManager;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
+use App\ApiModel\Municipality\President\PresidentCreate;
+use App\ApiModel\Municipality\President\PresidentUpdate;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class MunicipalityPresidentManager extends AbstractManager
 {
@@ -19,14 +20,18 @@ class MunicipalityPresidentManager extends AbstractManager
     private PresidentCreate $presidentCRModel;
     private PresidentUpdate $presidentUPModel;
 
+    private NormalizerInterface $normalizer;
+
     public function __construct(
         ManagerRegistry $entityManager,
         ExceptionManager $exceptionManager,
         RequestStack $requestStack,
-        Security $security
+        Security $security,
+        NormalizerInterface $normalizer
 
     ) {
         $this->security = $security;
+        $this->normalizer = $normalizer;
         parent::__construct($entityManager, $exceptionManager, $requestStack);
     }
     public function init(string $method, $settings = [])
@@ -50,25 +55,13 @@ class MunicipalityPresidentManager extends AbstractManager
         if (!$president) {
             throw new \Exception("no_municipality_president_found", 1);
         }
+       
+       $data =  $this->normalizer->normalize($president, null, [
+            "groups" => ["president_details"]
+        ]);
         return [
             "data" => [
-                "president" => [
-                    "code" => $president->getCode(),
-                    "first_name" => $president->getFirstName(),
-                    "last_name" => $president->getLastName(),
-                    "email" => $president->getEmail(),
-                    "cin" => $president->getCin(),
-                    "created_at" => null,
-                    "updated_at" => null,
-                    "is_activated" => $president->getIsActivated(),
-                    "date_begin" => $president->getDateBegin()->format('Y-m-d'),
-                    "date_end" => $president->getDateEnd()->format('Y-m-d'),
-                    "municipality" => [
-                        "code" => $president->getMunicipality()->getCode(),
-                        "frensh_name" => $president->getMunicipality()->getFrenshName(),
-                        "arabic_name" => $president->getMunicipality()->getArabicName(),
-                    ]
-                ]
+                "municipality_president" => $data
             ]
         ];
     }
@@ -141,13 +134,13 @@ class MunicipalityPresidentManager extends AbstractManager
             ->setFirstName($this->presidentCRModel->first_name)
             ->setLastName($this->presidentCRModel->last_name)
             ->setEmail($this->presidentCRModel->email)
-            ->setDateBegin(new DateTimeImmutable($this->presidentCRModel->date_begin))
-            ->setDateEnd(new DateTimeImmutable($this->presidentCRModel->date_end))
+            ->setDateBegin(new DateTime($this->presidentCRModel->date_begin))
+            ->setDateEnd(new DateTime($this->presidentCRModel->date_end))
             ->setCin($this->presidentCRModel->cin)
             ->setIsActivated($this->presidentCRModel->is_activated)
             ->setRole("ROLE_MUNICIPALITY_PRESIDENT")
             ->setPassword($password)
-            ->setCreatedAt(new DateTimeImmutable());
+            ->setCreatedAt(new DateTime());
         $this->apiEntityManager->persist($newPresident);
         $this->apiEntityManager->flush();
         return [
@@ -176,11 +169,11 @@ class MunicipalityPresidentManager extends AbstractManager
             ->setFirstName($this->presidentUPModel->first_name)
             ->setLastName($this->presidentUPModel->last_name)
             ->setEmail($this->presidentUPModel->email)
-            ->setDateBegin(new DateTimeImmutable($this->presidentUPModel->date_begin))
-            ->setDateEnd(new DateTimeImmutable($this->presidentUPModel->date_end))
+            ->setDateBegin(new DateTime($this->presidentUPModel->date_begin))
+            ->setDateEnd(new DateTime($this->presidentUPModel->date_end))
             ->setCin($this->presidentUPModel->cin)
             ->setIsActivated($this->presidentUPModel->is_activated)
-            ->setUpdatedAt(new DateTimeImmutable());
+            ->setUpdatedAt(new DateTime());
 
         $this->apiEntityManager->persist($president);
         $this->apiEntityManager->flush();
@@ -213,6 +206,17 @@ class MunicipalityPresidentManager extends AbstractManager
             ]
         ];
     }
-    #generate random password
+
+    public function generateRandomPassword()
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array(); //remember to declare $pass as an array
+        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); //turn the array into a string
+    }
 
 }

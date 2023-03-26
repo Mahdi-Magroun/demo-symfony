@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TeamRepository;
 use SSH\MyJwtBundle\Utils\MyTools;
 use SSH\MyJwtBundle\Entity\AbstractEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 class Team extends AbstractEntity
@@ -16,18 +17,22 @@ class Team extends AbstractEntity
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['show_no_credentials'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['show_no_credentials'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['show_no_credentials'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_no_credentials'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 50,nullable:true)]
@@ -36,10 +41,12 @@ class Team extends AbstractEntity
     #[ORM\Column]
     private ?bool $isActivated = null;
 
-    public function __construct()
+    public function __construct( $data = [] )
     {
+        parent::__construct( $data );
         $this->code = MyTools::GUIDv4();
     }
+   
     public function getId(): ?int
     {
         return $this->id;
