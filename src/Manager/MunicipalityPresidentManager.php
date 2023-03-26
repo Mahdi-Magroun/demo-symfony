@@ -48,7 +48,7 @@ class MunicipalityPresidentManager extends AbstractManager
     }
     public function getOneDetail($code)
     {
-       $president= $this->getMunicipalityPresident($code);
+        $president = $this->getMunicipalityPresident($code);
         if (!$president) {
             throw new \Exception("no_municipality_president_found", 1);
         }
@@ -72,18 +72,18 @@ class MunicipalityPresidentManager extends AbstractManager
      */
     public function getMany()
     {
-        $thereIsMunicipality = false;
 
+        $municipality = null;
+        // check if municipality code is valid :: filter by municipality code
         if ($this->request->query->get('municipality_code')) {
             $municipality = $this->apiEntityManager->getRepository(Municipality::class)
                 ->findOneBy(["code" => $this->request->query->get('municipality_code')]);
             if (!$municipality) {
                 throw new \Exception("invalid_municiality_code", 1);
             }
-            $thereIsMunicipality = true;
         }
         $filter = [
-            "municipality_id" => ($thereIsMunicipality) ? $municipality->getId() : null,
+            "municipality_id" => ($municipality) ? $municipality->getId() : null,
             "is_activated" => $this->request->query->get('is_activated'),
             "first_name" => $this->request->query->get('first_name'),
             "last_name" => $this->request->query->get('last_name'),
@@ -109,19 +109,20 @@ class MunicipalityPresidentManager extends AbstractManager
     public function create()
     {
         $presidentCRModel = (array)$this->presidentCRModel;
-        // verify if the municipality is valid 
+
+        // verify if the municipality is valid : throw if not
         $municipality = $this->apiEntityManager->getRepository(Municipality::class)
             ->findOneBy(['code' => $presidentCRModel['municipality']]);
         if (!$municipality)
             throw new \Exception("municipality_not_found", 1);
-        //verify if there is an active user 
+        //verify if there is an active user  : throw if there is an active user 
         $oldPresident = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
             ->findOneBy(["municipality" => $municipality, "isActivated" => true]);
         if ($oldPresident && $presidentCRModel['is_activated'] == true) {
             throw new \Exception("only_one_active_user_should_be_provided", 1);
         }
-        // create a new president
-      
+        // create a new president from prsidnetCRModel
+
         $presidentCRModel['municipality'] = $municipality;
         $this->formatDatetime($presidentCRModel);
         $newPresident = new MunicipalityAgent($presidentCRModel);
@@ -143,18 +144,19 @@ class MunicipalityPresidentManager extends AbstractManager
     public function update($code)
     {
         $presidentUPModel = (array)$this->presidentUPModel;
-        $president =$this->getMunicipalityPresident($code);
+        $president = $this->getMunicipalityPresident($code);
         if (!$president)
             throw new \Exception("presedent_not_found", 1);
+        # verify if there is an active president: throw if there is an active president
         if ($president->getIsActivated() == false && $presidentUPModel['is_activated'] == true) {
-            # verify if there is an active president
+
             $activePresident = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
                 ->findOneBy(['role' => "ROLE_MUNICIPALITY_PRESIDENT", "isActivated" => true, "municipality" => $president->getMunicipality()]);
             if ($activePresident) {
                 throw new \Exception("only_one_active_user_should_be_provided", 1);
             }
-            }
-       
+        }
+        // update president from presidentUPModel
         $this->formatDatetime($presidentUPModel);
         $this->updateObject($president, $presidentUPModel);
         $this->apiEntityManager->persist($president);
@@ -167,10 +169,11 @@ class MunicipalityPresidentManager extends AbstractManager
         ];
     }
 
+    # block or unblock a president
     public function activation($agentCode)
     {
 
-        $agent =$this->getMunicipalityPresident($agentCode);
+        $agent = $this->getMunicipalityPresident($agentCode);
         if (!$agent)
             throw new \Exception("municipality_president_not_found", 1);
         if ($agent->getIsActivated()) {
@@ -206,6 +209,6 @@ class MunicipalityPresidentManager extends AbstractManager
             ->findOneBy(['role' => "ROLE_MUNICIPALITY_PRESIDENT", "code" => $code]);
         if (!$president)
             throw new \Exception("president_not_found", 1);
-       return $president;
-}
+        return $president;
+    }
 }

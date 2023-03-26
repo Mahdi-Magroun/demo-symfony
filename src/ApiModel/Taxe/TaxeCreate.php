@@ -7,11 +7,11 @@ class TaxeCreate extends CommonParameterBag{
 /**
  * @Assert\NotBlank
  */
-public $taxe_abbreviation; 
+public $abbreviation; 
 /**
  * @Assert\NotBlank
  */
-public $taxe_name;
+public $name;
 /**
  * @Assert\NotBlank
  */

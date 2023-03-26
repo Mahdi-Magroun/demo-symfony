@@ -4,13 +4,14 @@ namespace App\Manager;
 
 use App\Entity\Taxe;
 use App\Entity\Team;
-use DateTimeImmutable;
+use DateTime;
 use App\ApiModel\Taxe\TaxeCreate;
 use App\ApiModel\Taxe\TaxeUpdate;
 use Doctrine\Persistence\ManagerRegistry;
 use SSH\MyJwtBundle\Manager\ExceptionManager;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class TaxeManager extends AbstractManager
 {
@@ -18,12 +19,15 @@ class TaxeManager extends AbstractManager
     private Security $security;
     private TaxeCreate $taxeCRModel;
     private TaxeUpdate $taxeUPModel;
+    private NormalizerInterface $normalizer;
     public function __construct(
         ManagerRegistry $entityManager,
         ExceptionManager $exceptionManager,
         RequestStack $requestStack,
-        Security $security
+        Security $security,
+        NormalizerInterface $normalizer
     ) {
+        $this->normalizer = $normalizer;
         $this->security = $security;
         parent::__construct($entityManager, $exceptionManager, $requestStack);
     }
@@ -50,14 +54,13 @@ class TaxeManager extends AbstractManager
     }
     public function create()
     {
-        $taxe = new Taxe();
-        $creator = $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code' => $this->security->getUser()->getCode()]);
-        $taxe->setCreator($creator)
-            ->setName($this->taxeCRModel->taxe_name)
-            ->setAbbreviation($this->taxeCRModel->taxe_abbreviation)
-            ->setDateBegin(new DateTimeImmutable($this->taxeCRModel->date_begin))
-            ->setCreatedAt(new DateTimeImmutable('now'))
-            ->setIsActivated($this->taxeCRModel->is_activated);
+        $taxeCRModel = (array)$this->taxeCRModel;
+        $taxeCRModel['creator'] = $this->request->get('teamCaller');
+
+        $this->formatDatetime($taxeCRModel);
+        //  dd($taxeCRModel);
+        $taxe = new Taxe($taxeCRModel);
+        //dd($taxe);
         $this->apiEntityManager->persist($taxe);
         $this->apiEntityManager->flush();
         return [
@@ -70,22 +73,14 @@ class TaxeManager extends AbstractManager
 
     public function update($code)
     {
-        $taxe = $this->apiEntityManager->getRepository(Taxe::class)
-            ->findOneBy(['code' => $code]);
+        $taxeUPModel = (array)$this->taxeUPModel;
+        $taxe = $this->getTaxeByCode($code);
         if (!$taxe)
             throw new \Exception("invalid_taxe_code", 1);
 
-        $updator = $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code' => $this->security->getUser()->getCode()]);
-        $taxe->setAbbreviation($this->taxeUPModel->taxe_abbreviation)
-            ->setName($this->taxeUPModel->taxe_name)
-            ->setDateBegin(new DateTimeImmutable($this->taxeUPModel->date_begin))
-            ->setIsActivated($this->taxeUPModel->is_activated)
-            ->setUpdator($updator)
-            ->setUpdatedAt(new DateTimeImmutable());
-        if ($this->taxeUPModel->date_end != null) {
-            # code...
-            $taxe->setDateEnd(new DateTimeImmutable());
-        }
+        $taxeUPModel['updator'] = $this->request->get('teamCaller');
+        $this->formatDatetime($taxeUPModel);
+        $this->updateObject($taxe, $taxeUPModel);
         $this->apiEntityManager->persist($taxe);
         $this->apiEntityManager->flush();
         return [
@@ -119,30 +114,21 @@ class TaxeManager extends AbstractManager
             ->findOneBy(['code' => $code]);
         if (!$taxe)
             throw new \Exception("invalid_taxe_code", 1);
-        $creator = $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code' => $taxe->getCreator()->getCode()]);
-        $updator =  $this->apiEntityManager->getRepository(Team::class)->findOneBy(['code' => $taxe->getUpdator()->getCode()]);
+        $taxe = $this->normalizer->normalize($taxe, null, ['groups' => ['show_taxe', "show_no_credentials"]]);
         return [
             "data" => [
-                "taxe_abbreviation" => $taxe->getAbbreviation(),
-                "taxe_name" => $taxe->getName(),
-                "creator" =>  [
-                    "code" => $creator->getCode(),
-                    "first_name" => $creator->getFirstName(),
-                    "last_name" => $creator->getLastName(),
-                ],
-                "updator" => ($updator) ? [
-                    "code" => $creator->getCode(),
-                    "first_name" => $creator->getFirstName(),
-                    "last_name" => $creator->getLastName(),
-                ] : null,
-                "created_at" => ($taxe->getCreatedAt()) ? $taxe->getCreatedAt()->format('Y-m-d') : null,
-                "updated_at" => ($taxe->getUpdatedAt()) ? $taxe->getUpdatedAt()->format('Y-m-d') : null,
-                "date_begin" => ($taxe->getDateBegin()) ? $taxe->getDateBegin()->format('Y-m-d') : null,
-                "date_end" => ($taxe->getDateEnd()) ? $taxe->getDateEnd()->format('Y-m-d') : null,
-                "is_activated" => $taxe->getIsActivated()
-
-
+                "taxe" => $taxe
             ]
         ];
+    }
+
+    # get taxe by code
+    public function getTaxeByCode($code)
+    {
+        $taxe = $this->apiEntityManager->getRepository(Taxe::class)
+            ->findOneBy(['code' => $code]);
+        if (!$taxe)
+            throw new \Exception("invalid_taxe_code", 1);
+        return $taxe;
     }
 }

@@ -26,19 +26,19 @@ class Notice
     private ?MunicipalityAgent $creator = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne]
     private ?MunicipalityAgent $updator = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $sendedAt = null;
+    private ?\DateTime $sendedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $recivedAt = null;
+    private ?\DateTime $recivedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $transferType = null;
@@ -96,12 +96,12 @@ class Notice
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -120,36 +120,36 @@ class Notice
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getSendedAt(): ?\DateTimeImmutable
+    public function getSendedAt(): ?\DateTime
     {
         return $this->sendedAt;
     }
 
-    public function setSendedAt(?\DateTimeImmutable $sendedAt): self
+    public function setSendedAt(?\DateTime $sendedAt): self
     {
         $this->sendedAt = $sendedAt;
 
         return $this;
     }
 
-    public function getRecivedAt(): ?\DateTimeImmutable
+    public function getRecivedAt(): ?\DateTime
     {
         return $this->recivedAt;
     }
 
-    public function setRecivedAt(?\DateTimeImmutable $recivedAt): self
+    public function setRecivedAt(?\DateTime $recivedAt): self
     {
         $this->recivedAt = $recivedAt;
 

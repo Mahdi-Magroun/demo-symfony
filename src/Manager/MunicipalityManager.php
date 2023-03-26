@@ -69,13 +69,15 @@ class MunicipalityManager extends AbstractManager
     {
         // verify governorate 
         $municipalityCr = (array) $this->municipalityCRModel;
+
+        // create municipality from api model
         $this->findObjects($municipalityCr, ["governorate"]);
         $municipalityCr['isActivated'] = true;
-
         $municipalityCr["creator"] = $this->request->get("teamCaller");
-
         $municipality = new Municipality($municipalityCr);
-        // create president
+
+
+        // create president from api model
         $president = new MunicipalityAgent();
         $president->setFirstName($this->municipalityCRModel->president_first_name)
             ->setDateBegin(new DateTime($this->municipalityCRModel->president_date_begin))
@@ -116,22 +118,21 @@ class MunicipalityManager extends AbstractManager
 
     public function getOneDetail($code)
     {
-        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
-            ->findOneBy(["code" => $code]);
+        $municipality = $this->getMunicipalityByCode($code);
         if (!$municipality) {
             throw new \Exception("invalid_municipality_code", 1);
         }
         $municipalityPresident = $this->apiEntityManager->getRepository(MunicipalityAgent::class)
             ->findOneBy(["municipality" => $municipality]);
 
-       $creator = $municipality->getCreator();
-       $data=[];
-       $data['municipality']= $this->normalizer->normalize($municipality, null,['groups' => ['show_municipality','show_no_credentials']]);
-       $data['president']= $this->normalizer->normalize ($municipalityPresident, null,['groups' => 'show_no_credentials']);
-       
+        $creator = $municipality->getCreator();
+        $data = [];
+        $data['municipality'] = $this->normalizer->normalize($municipality, null, ['groups' => ['show_municipality', 'show_no_credentials']]);
+        $data['president'] = $this->normalizer->normalize($municipalityPresident, null, ['groups' => 'show_no_credentials']);
+
         return [
             "data" => [
-             $data
+                $data
             ]
 
         ];
@@ -160,10 +161,7 @@ class MunicipalityManager extends AbstractManager
     }
     public function activation($municipalityCode)
     {
-
-
-        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
-            ->findOneBy(['code' => $municipalityCode]);
+        $municipality = $this->getMunicipalityByCode($municipalityCode);
         if (!$municipality)
             throw new \Exception("municipality_not_found", 1);
         if ($municipality->getIsActivated()) {
@@ -190,12 +188,11 @@ class MunicipalityManager extends AbstractManager
         if (!$governorate) {
             throw new \Exception("governorate_not_found_exception", 1);
         }
-        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
-            ->findOneBy(["code" => $code]);
+        $municipality = $this->getMunicipalityByCode($code);
         if (!$municipality) {
             throw new \Exception("invalid_municipality_code", 1);
         }
-       
+
         $municipalityFomUser = array_merge($municipalityFomUser, ["governorate" => $governorate, "updator" => $this->request->get('teamCaller')]);
         $this->updateObject($municipality, $municipalityFomUser);
 
@@ -234,5 +231,15 @@ class MunicipalityManager extends AbstractManager
             $pass[] = $alphabet[$n];
         }
         return implode($pass); //turn the array into a string
+    }
+    # method that get municipality by code and throw an exception if not found
+    public function getMunicipalityByCode($code)
+    {
+        $municipality = $this->apiEntityManager->getRepository(Municipality::class)
+            ->findOneBy(["code" => $code]);
+        if (!$municipality) {
+            throw new \Exception("invalid_municipality_code", 1);
+        }
+        return $municipality;
     }
 }

@@ -25,14 +25,14 @@ class MunicipalityTaxeSearchCriteria
     private ?bool $isActivated = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?MunicipalityAgent $creator = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -42,10 +42,10 @@ class MunicipalityTaxeSearchCriteria
     private ?string $value = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $dateBegin = null;
+    private ?\DateTime $dateBegin = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $dateEnd = null;
+    private ?\DateTime $dateEnd = null;
 
     public function __construct()
     {
@@ -92,12 +92,12 @@ class MunicipalityTaxeSearchCriteria
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -116,12 +116,12 @@ class MunicipalityTaxeSearchCriteria
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
@@ -152,24 +152,24 @@ class MunicipalityTaxeSearchCriteria
         return $this;
     }
 
-    public function getDateBegin(): ?\DateTimeImmutable
+    public function getDateBegin(): ?\DateTime
     {
         return $this->dateBegin;
     }
 
-    public function setDateBegin(\DateTimeImmutable $dateBegin): self
+    public function setDateBegin(\DateTime $dateBegin): self
     {
         $this->dateBegin = $dateBegin;
 
         return $this;
     }
 
-    public function getDateEnd(): ?\DateTimeImmutable
+    public function getDateEnd(): ?\DateTime
     {
         return $this->dateEnd;
     }
 
-    public function setDateEnd(?\DateTimeImmutable $dateEnd): self
+    public function setDateEnd(?\DateTime $dateEnd): self
     {
         $this->dateEnd = $dateEnd;
 

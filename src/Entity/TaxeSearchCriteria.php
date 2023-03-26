@@ -4,11 +4,12 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SSH\MyJwtBundle\Entity\AbstractEntity;
 use SSH\MyJwtBundle\Utils\MyTools;
 use App\Repository\TaxeSearchCriteriaRepository;
 
 #[ORM\Entity(repositoryClass: TaxeSearchCriteriaRepository::class)]
-class TaxeSearchCriteria
+class TaxeSearchCriteria extends AbstractEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue (strategy:'IDENTITY')]
@@ -32,16 +33,16 @@ class TaxeSearchCriteria
     private ?bool $isActivated = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $dateBegin = null;
+    private ?\DateTime $dateBegin = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $dateEnd = null;
+    private ?\DateTime $dateEnd = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -122,48 +123,48 @@ class TaxeSearchCriteria
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getDateBegin(): ?\DateTimeImmutable
+    public function getDateBegin(): ?\DateTime
     {
         return $this->dateBegin;
     }
 
-    public function setDateBegin(\DateTimeImmutable $dateBegin): self
+    public function setDateBegin(\DateTime $dateBegin): self
     {
         $this->dateBegin = $dateBegin;
 
         return $this;
     }
 
-    public function getDateEnd(): ?\DateTimeImmutable
+    public function getDateEnd(): ?\DateTime
     {
         return $this->dateEnd;
     }
 
-    public function setDateEnd(?\DateTimeImmutable $dateEnd): self
+    public function setDateEnd(?\DateTime $dateEnd): self
     {
         $this->dateEnd = $dateEnd;
 
