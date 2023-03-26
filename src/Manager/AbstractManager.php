@@ -306,9 +306,11 @@ abstract class AbstractManager //implements ModelInterface
      */
     protected function updateObject($object, $data)
     {
+       
         if ($object instanceof \SSH\MyJwtBundle\Entity\AbstractEntity) {
 
             $object->fromArray($data);
+         
 
             if (method_exists($object, 'setUpdatedAt')) {
                 $object->setUpdatedAt(new \DateTime());

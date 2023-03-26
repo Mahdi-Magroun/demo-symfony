@@ -2,16 +2,18 @@
 
 namespace App\EventListener;
 
-use App\Entity\Admin;
-use App\Manager\CompanyManager;
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use SSH\MsJwtBundle\Manager\ExceptionManager;
-use App\Entity\BackUser;
-use App\Entity\Comapny;
+use App\Entity\Team;
 use App\Entity\User;
+use App\Entity\Admin;
+use App\Entity\Comapny;
+use App\Entity\BackUser;
+use App\Manager\CompanyManager;
+use App\Entity\MunicipalityAgent;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use SSH\MyJwtBundle\Manager\ExceptionManager;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Caller Listener.
@@ -50,12 +52,12 @@ class CallerListener
      *
      * @param ModelFactory $modelFactory
      */
-    public function __construct(Registry $entityManager, ExceptionManager $exceptionManager, TokenStorageInterface $tokenStorage, CompanyManager $companyManager)
+    public function __construct(Registry $entityManager, ExceptionManager $exceptionManager, TokenStorageInterface $tokenStorage)
     {
         $this->apiEntityManager = $entityManager;
         $this->exceptionManager = $exceptionManager;
         $this->tokenStorage = $tokenStorage;
-        $this->companyManager = $companyManager;
+       
     }
 
     /**
@@ -74,34 +76,30 @@ class CallerListener
                 !in_array($route, $this->unchekedRoutes)
         ) {
             $wsUser = $this->tokenStorage->getToken()->getUser();
+           
 
             if (is_object($wsUser)) {
-                if (in_array('ROLE_BACK', $wsUser->getRoles())) {
+                if (in_array('ROLE_TEAM', $wsUser->getRoles())) {
+                   
                     $user = $this->apiEntityManager
-                            ->getRepository(Admin::class)
-                            ->findOneByMail($wsUser->getUsername());
-//                dd($user->getGroup());
-                    if (!$user->getGroup()) {
-                        $this->exceptionManager->throwAccessDeniedException();
-                    }   
-
-                    $request->attributes->set('userCaller', $user);
+                    ->getRepository(Team::class)
+                    ->findOneBy(['email'=>$wsUser->getUsername(),'password'=>$wsUser->getPassword()]);;
+//            
+                    $request->attributes->set('teamCaller', $user);
                 }
 
-                if (in_array('ROLE_FRONT', $wsUser->getRoles())) {
+                if (in_array('ROLE_MUNICIPALITY', $wsUser->getRoles())) {
 
                     if (is_a($wsUser, \SSH\MsJwtBundle\Entity\ApiUser::class) && $wsUser->getUsername()) {
 
                         $companyuser = $this->apiEntityManager
-                                ->getRepository(User::class)
-                                ->findOneByMail($wsUser->getUsername());
+                                ->getRepository(MunicipalityAgent::class)
+                                ->findOneBy(['email'=>$wsUser->getUsername(),'password'=>$wsUser->getPassword()]);
 
-                        if (!$companyuser instanceof User) {
-                            $this->exceptionManager->throwAccessDeniedException();
-                        }
+                       
 
-                        $request->attributes->set('companyUserCaller', $companyuser);
-                          $request->attributes->set('companyUserCaller', $informations);
+                        $request->attributes->set('municipalityAgentCaller', $companyuser);
+                         
                     }
                 }
             }

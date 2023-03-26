@@ -70,9 +70,9 @@ class MunicipalityManager extends AbstractManager
         // verify governorate 
         $municipalityCr = (array) $this->municipalityCRModel;
         $this->findObjects($municipalityCr, ["governorate"]);
+        $municipalityCr['isActivated'] = true;
 
-
-        $municipalityCr["creator"] = $this->apiEntityManager->getRepository(Team::class)->findOneBy(["code" => $this->security->getUser()->getCode()]);
+        $municipalityCr["creator"] = $this->request->get("teamCaller");
 
         $municipality = new Municipality($municipalityCr);
         // create president
@@ -195,13 +195,8 @@ class MunicipalityManager extends AbstractManager
         if (!$municipality) {
             throw new \Exception("invalid_municipality_code", 1);
         }
-        $municipality->setGovernorate($governorate)
-            ->setUpdator(
-                $this->apiEntityManager->getRepository(Team::class)->findOneBy(["code" => $this->security->getUser()->getCode()])
-
-            );
        
-        $municipalityFomUser = array_merge($municipalityFomUser, ["governorate" => $governorate, "updator" => $this->apiEntityManager->getRepository(Team::class)->findOneBy(["code" => $this->security->getUser()->getCode()])]);
+        $municipalityFomUser = array_merge($municipalityFomUser, ["governorate" => $governorate, "updator" => $this->request->get('teamCaller')]);
         $this->updateObject($municipality, $municipalityFomUser);
 
         return [

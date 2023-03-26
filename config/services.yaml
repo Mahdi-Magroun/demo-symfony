@@ -26,3 +26,14 @@ services:
     SSH\MyJwtBundle\Controller\:
         resource: '../vendor/ssh/myjwtbundle/Controller'
         tags: ['controller.service_arguments']
+    listener.caller:
+        class: App\EventListener\CallerListener
+        arguments: ["@doctrine", "@manager.exception", "@security.token_storage"]
+        tags:
+            - {
+                name: kernel.event_listener,
+                event: kernel.controller,
+                method: onKernelRequest,
+                priority: -1,
+            }
+        

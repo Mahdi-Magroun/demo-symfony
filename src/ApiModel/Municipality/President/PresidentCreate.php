@@ -1,5 +1,6 @@
 <?php 
 namespace App\ApiModel\Municipality\President;
+use DateTime;
 use SSH\MyJwtBundle\Request\CommonParameterBag;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -8,7 +9,7 @@ class PresidentCreate extends CommonParameterBag{
 /**
  * @Assert\NotBlank
  */
-public $municipality_code;
+public $municipality;
 /**
  * @Assert\NotBlank
  */
@@ -23,6 +24,7 @@ public $last_name;
 public $email;
 /**
  * @Assert\NotBlank
+ * @var DateTime
  */
 public $date_begin;
 /**

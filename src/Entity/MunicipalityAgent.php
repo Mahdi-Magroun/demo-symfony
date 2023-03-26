@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\AbstractEntity;
+use SSH\MyJwtBundle\Entity\AbstractEntity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;

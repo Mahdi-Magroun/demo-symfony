@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Entity\AbstractEntity;
+
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use SSH\MyJwtBundle\Utils\MyTools;
 use App\Repository\MunicipalityRepository;
+use SSH\MyJwtBundle\Entity\AbstractEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
